@@ -1,5 +1,6 @@
 const API_URL = "http://localhost:5000/api/productos";
 const cart = [];
+
 // Función para obtener los productos
 async function fetchProducts() {
     const response = await fetch(API_URL);
@@ -66,49 +67,25 @@ function filterProducts(event) {
 }
 
 // Inicializar eventos
-document.querySelector("#productForm").addEventListener("submit", createProduct);
-document.querySelector("#searchInput").addEventListener("input", filterProducts);
-
-// Cargar productos al cargar la página
-fetchProducts();
-
-function addToCart(productId, productName, productPrice) {
-    const productIndex = cart.findIndex(item => item.id === productId);
-    if (productIndex > -1) {
-        cart[productIndex].quantity += 1;
-        cart[productIndex].total = cart[productIndex].quantity * productPrice;
-    } else {
-        cart.push({
-            id: productId,
-            name: productName,
-            price: productPrice,
-            quantity: 1,
-            total: productPrice
-        });
+document.addEventListener("DOMContentLoaded", () => {
+    const productForm = document.querySelector("#productForm");
+    if (productForm) {
+        productForm.addEventListener("submit", createProduct);
     }
-    renderCart();
-}
-async function fetchAvailableProducts() {
-    const response = await fetch(API_URL);
-    const products = await response.json();
-    renderAvailableProducts(products);
-}
-// Función para renderizar productos disponibles
-function renderAvailableProducts(products) {
-    const tableBody = document.querySelector("#availableProductsTable tbody");
-    tableBody.innerHTML = ""; // Limpiar tabla
-    products.forEach(product => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-            <td>${product.id_producto}</td>
-            <td>${product.nombre_producto}</td>
-            <td>${product.precio}</td>
-            <td>${product.stock}</td>
-            <td><button onclick="addToCart(${product.id_producto}, '${product.nombre_producto}', ${product.precio})">Agregar</button></td>
-        `;
-        tableBody.appendChild(row);
-    });
-}
+
+    const searchInput = document.querySelector("#searchInput");
+    if (searchInput) {
+        searchInput.addEventListener("input", filterProducts);
+    }
+
+    const checkoutButton = document.querySelector("#checkoutButton");
+    if (checkoutButton) {
+        checkoutButton.addEventListener("click", checkout);
+    }
+
+    fetchProducts();
+});
+
 // Función para agregar productos al carrito
 function addToCart(productId, productName, productPrice) {
     const productIndex = cart.findIndex(item => item.id === productId);
@@ -126,6 +103,39 @@ function addToCart(productId, productName, productPrice) {
     }
     renderCart();
 }
+
+// Función para cargar productos disponibles
+async function fetchAvailableProducts() {
+    try {
+        const response = await fetch(API_URL);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const products = await response.json();
+        renderAvailableProducts(products);
+    } catch (error) {
+        console.error("Error fetching products:", error);
+        alert("No se pudieron cargar los productos. Intente nuevamente más tarde.");
+    }
+}
+
+// Función para renderizar productos disponibles
+function renderAvailableProducts(products) {
+    const tableBody = document.querySelector("#availableProductsTable tbody");
+    tableBody.innerHTML = ""; // Limpiar tabla
+    products.forEach(product => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${product.id_producto}</td>
+            <td>${product.nombre_producto}</td>
+            <td>${product.precio}</td>
+            <td>${product.stock}</td>
+            <td><button onclick="addToCart(${product.id_producto}, '${product.nombre_producto}', ${product.precio})">Agregar</button></td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+
 // Función para renderizar el carrito
 function renderCart() {
     const cartTableBody = document.querySelector("#cartTable tbody");
@@ -169,8 +179,5 @@ function checkout() {
         fetchProducts(); // Actualizar la lista de productos
     });
 }
-
-// Evento para el botón de finalizar compra
-document.querySelector("#checkoutButton").addEventListener("click", checkout);
 
 fetchAvailableProducts();
