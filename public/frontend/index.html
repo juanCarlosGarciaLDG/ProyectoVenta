@@ -8,7 +8,12 @@
 </head>
 <body>
     <div class="container">
-        <!-- Columna izquierda: Formulario -->
+        <!-- Enlace al carrito -->
+        <div style="text-align: right; margin-bottom: 20px;">
+            <a href="carrito.html" class="btn-submit" style="text-decoration: none; padding: 10px;">Ir al Carrito</a>
+        </div>
+
+        <!-- Formulario para crear productos -->
         <div class="column">
             <h2>Crear Producto</h2>
             <form id="productForm">
@@ -32,7 +37,7 @@
             </form>
         </div>
 
-        <!-- Columna derecha: Lista de Productos -->
+        <!-- Lista de productos -->
         <div class="column">
             <h2>Lista de Productos</h2>
             <input type="text" id="searchInput" placeholder="Buscar por Nombre o ID">
@@ -44,6 +49,7 @@
                         <th>Precio</th>
                         <th>Stock</th>
                         <th>Categoría</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>

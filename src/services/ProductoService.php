@@ -2,6 +2,12 @@
 require_once __DIR__ . '/../config/db.php';
 
 class ProductoService {
+    public static function actualizarStock($id, $cantidad) {
+        $db = (new Database())->getConnection();
+        $query = "UPDATE productos SET stock = stock + ? WHERE id_producto = ?";
+        $stmt = $db->prepare($query);
+        return $stmt->execute([$cantidad, $id]);
+    }
     public static function obtenerTodos() {
         $db = (new Database())->getConnection();
         $query = "SELECT * FROM productos";
@@ -39,4 +45,5 @@ class ProductoService {
         return $stmt->execute([$id]);
     }
 }
+
 ?>

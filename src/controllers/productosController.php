@@ -2,6 +2,14 @@
 require_once __DIR__ . '/../services/ProductoService.php';
 
 class ProductosController {
+
+    public static function purchaseFromCart() {
+        $cart = json_decode(file_get_contents("php://input"), true);
+        foreach ($cart as $item) {
+            ProductoService::actualizarStock($item['id'], -$item['quantity']);
+        }
+        echo json_encode(["message" => "Compra realizada con éxito"]);
+    }
     public static function index() {
         $productos = ProductoService::obtenerTodos();
         header('Content-Type: application/json');
@@ -40,4 +48,5 @@ class ProductosController {
         }
     }
 }
+        
 ?>
