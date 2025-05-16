@@ -43,10 +43,31 @@ if (strpos($request_uri, '/api/productos') === 0) {
             exit;
         }
         ProductosController::show($id);
-    } 
+    // Nueva ruta para obtener categorías
+} elseif ($request_method === "GET" && $request_uri === '/api/productos/categorias') {
+    try {
+        $db = (new Database())->getConnection();
+        $categorias = ProductoService::obtenerCategorias($db);
+        echo json_encode($categorias);
+    } catch (Exception $e) {
+        header("HTTP/1.1 500 Internal Server Error");
+        echo json_encode(["error" => $e->getMessage()]);
+    }
+
+// Nueva ruta para obtener proveedores
+} elseif ($request_method === "GET" && $request_uri === '/api/productos/proveedores') {
+    try {
+        $db = (new Database())->getConnection();
+        $proveedores = ProductoService::obtenerProveedores($db);
+        echo json_encode($proveedores);
+    } catch (Exception $e) {
+        header("HTTP/1.1 500 Internal Server Error");
+        echo json_encode(["error" => $e->getMessage()]);
+    }
+     
 
 
-    else {
+}else {
         header("HTTP/1.1 404 Not Found");
         echo json_encode(["error" => "Ruta no encontrada en productos"]);
     }
