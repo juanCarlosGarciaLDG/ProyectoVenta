@@ -1,4 +1,5 @@
 <?php
+header("Access-Control-Allow-Origin: *");
 require_once __DIR__ . '/../controllers/comprasController.php';
 
 header('Content-Type: application/json');
@@ -10,7 +11,30 @@ $request_method = $_SERVER["REQUEST_METHOD"];
 if (strpos($request_uri, '/api/compras') === 0) {
     // Ruta específica para realizar una compra
     if ($request_method === "POST" && $request_uri === '/api/compras/realizar') {
-        ComprasController::realizarCompra();
+        $data = json_decode(file_get_contents("php://input"), true);
+        $carrito = $data['carrito'] ?? [];
+        $db = (new Database())->getConnection();
+
+        foreach ($carrito as $item) {
+            // Verifica stock actual
+            $stmt = $db->prepare("SELECT stock FROM productos WHERE id = ?");
+            $stmt->execute([$item['id']]);
+            $stockActual = $stmt->fetchColumn();
+
+            if ($stockActual < $item['cantidad']) {
+                echo json_encode([
+                    "success" => false,
+                    "message" => "No hay suficiente stock para el producto: " . $item['nombre']
+                ]);
+                exit;
+            }
+
+            // Resta el stock
+            $stmt = $db->prepare("UPDATE productos SET stock = stock - ? WHERE id = ?");
+            $stmt->execute([$item['cantidad'], $item['id']]);
+        }
+
+        echo json_encode(["success" => true]);
         exit;
     }
     // Ruta para agregar un producto al carrito
