@@ -17,6 +17,7 @@ class ProductoService {
     public static function obtenerTodos($db) {
         try {
             $query = "SELECT p.id, p.nombre, p.descripcion, p.precio, p.stock, 
+                             p.imagen,  -- <--- agrega esto
                              c.nombre_categoria AS categoria_nombre, 
                              pr.nombre AS proveedor_nombre
                       FROM productos p
