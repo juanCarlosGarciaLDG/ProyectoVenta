@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { FaShoppingCart, FaUserCircle } from 'react-icons/fa';
+import { FaShoppingCart, FaBars } from 'react-icons/fa';
 
-function NavBar({ onCartClick, onHistoryClick, onLogout }) {
+function NavBar({ onCartClick, onShowProviders, onShowCategories, onHistoryClick, onLogout }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -16,7 +16,7 @@ function NavBar({ onCartClick, onHistoryClick, onLogout }) {
           </button>
           <div style={{ position: 'relative' }}>
             <button className="btn" onClick={() => setMenuOpen(!menuOpen)} style={{ fontSize: 28 }}>
-              <FaUserCircle size={32} />
+              <FaBars size={32} />
             </button>
             {menuOpen && (
               <div style={{
@@ -28,22 +28,28 @@ function NavBar({ onCartClick, onHistoryClick, onLogout }) {
                 borderRadius: 6,
                 boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
                 zIndex: 10,
-                minWidth: 300
+                minWidth: 220
               }}>
                 <div
-                  style={{
-                    padding: '0.9rem 1.5rem',
-                    cursor: 'pointer',
-                    borderBottom: '1px solid #eee',
-                    color: '#222', // <-- fuerza el color oscuro
-                    background: '#fff'
-                  }}
+                  style={{ padding: '0.9rem 1.5rem', cursor: 'pointer', borderBottom: '1px solid #eee', color: '#222', background: '#fff' }}
+                  onClick={() => { setMenuOpen(false); onShowProviders(); }}
+                >
+                  Proveedores
+                </div>
+                <div
+                  style={{ padding: '0.9rem 1.5rem', cursor: 'pointer', color: '#222', background: '#fff' }}
+                  onClick={() => { setMenuOpen(false); onShowCategories(); }}
+                >
+                  Categorías
+                </div>
+                <div
+                  style={{ padding: '0.9rem 1.5rem', cursor: 'pointer', borderBottom: '1px solid #eee', color: '#222', background: '#fff' }}
                   onClick={() => { setMenuOpen(false); onHistoryClick(); }}
                 >
                   Historial de compras
                 </div>
                 <div
-                  style={{ padding: '0.9rem 1.5rem', cursor: 'pointer', color: 'red' }}
+                  style={{ padding: '0.9rem 1.5rem', cursor: 'pointer', color: 'red', background: '#fff' }}
                   onClick={() => { setMenuOpen(false); onLogout(); }}
                 >
                   Cerrar sesión

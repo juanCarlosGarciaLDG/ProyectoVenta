@@ -4,6 +4,14 @@ import ProductList from './components/ProductList';
 import SearchBar from './components/SearchBar';
 import CartView from './components/CartView';
 import PurchaseHistory from './components/PurchaseHistory';
+import AddProduct from './components/AddProduct';
+import AddCategory from './components/AddCategory';
+import AddProvider from './components/AddProvider';
+import EditProducts from './components/EditProducts';
+import EditCategories from './components/EditCategories';
+import EditProviders from './components/EditProviders';
+import ProvidersView from './components/ProvidersView';
+import CategoriesView from './components/CategoriesView';
 import './App.css';
 
 function App() {
@@ -14,6 +22,15 @@ function App() {
   const [showCart, setShowCart] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [historial, setHistorial] = useState([]); // Simulado, luego lo traes del backend
+  const [isAdmin, setIsAdmin] = useState(true); // Cambia a false para ocultar
+  const [showAddProduct, setShowAddProduct] = useState(false);
+  const [showAddCategory, setShowAddCategory] = useState(false);
+  const [showAddProvider, setShowAddProvider] = useState(false);
+  const [showEditProducts, setShowEditProducts] = useState(false);
+  const [showEditCategories, setShowEditCategories] = useState(false);
+  const [showEditProviders, setShowEditProviders] = useState(false);
+  const [showProvidersView, setShowProvidersView] = useState(false);
+  const [showCategoriesView, setShowCategoriesView] = useState(false);
 
   useEffect(() => {
     fetch('http://localhost/ProyectoVenta/public/api/productos')
@@ -96,7 +113,19 @@ function App() {
     setProductosFiltrados(filtro);
   };
 
-  const handleCartClick = () => setShowCart(true);
+  const handleCartClick = () => {
+    setShowCart(true);
+    setShowHistory(false);
+    setShowAddProduct(false);
+    setShowAddCategory(false);
+    setShowAddProvider(false);
+    setShowEditProducts(false);
+    setShowEditCategories(false);
+    setShowEditProviders(false);
+    setShowProvidersView(false);
+    setShowCategoriesView(false);
+  };
+
   const handleBackToShop = () => setShowCart(false);
 
   const handleHistoryClick = () => {
@@ -132,25 +161,110 @@ function App() {
     }
   };
 
+  const handleShowProviders = () => {
+    setShowProvidersView(true);
+    setShowCategoriesView(false);
+    setShowCart(false);
+    setShowHistory(false);
+    setShowAddProduct(false);
+    setShowAddCategory(false);
+    setShowAddProvider(false);
+    setShowEditProducts(false);
+    setShowEditCategories(false);
+    setShowEditProviders(false);
+    // ...oculta cualquier otra vista
+  };
+
+  const handleBackToHome = () => {
+    setShowAddProduct(false);
+    setShowAddCategory(false);
+    setShowAddProvider(false);
+    setShowEditProducts(false);
+    setShowEditCategories(false);
+    setShowEditProviders(false);
+    setShowProvidersView(false);
+    setShowCategoriesView(false);
+    setShowCart(false);
+    setShowHistory(false);
+  };
+
   return (
     <div>
       <NavBar
         onCartClick={handleCartClick}
         onHistoryClick={handleHistoryClick}
         onLogout={handleLogout}
+        onAddProduct={() => { setShowAddProduct(true); setShowAddCategory(false); setShowAddProvider(false); setShowCart(false); setShowHistory(false); }}
+        onAddCategory={() => { setShowAddCategory(true); setShowAddProduct(false); setShowAddProvider(false); setShowCart(false); setShowHistory(false); }}
+        onAddProvider={() => { setShowAddProvider(true); setShowAddProduct(false); setShowAddCategory(false); setShowCart(false); setShowHistory(false); }}
+        onShowProviders={() => {
+          setShowProvidersView(true);
+          setShowCategoriesView(false);
+          setShowCart(false);
+          setShowHistory(false);
+        }}
+        onShowCategories={() => {
+          setShowCategoriesView(true);
+          setShowProvidersView(false);
+          setShowCart(false);
+          setShowHistory(false);
+        }}
+        isAdmin={isAdmin}
       />
-      {showHistory ? (
-        <PurchaseHistory historial={historial} onBack={() => setShowHistory(false)} />
-      ) : showCart ? (
+      {showAddProduct && <AddProduct onBack={handleBackToHome} />}
+      {showAddCategory && <AddCategory onBack={handleBackToHome} />}
+      {showAddProvider && <AddProvider onBack={handleBackToHome} />}
+      {showEditProducts && <EditProducts onBack={handleBackToHome} />}
+      {showEditCategories && <EditCategories onBack={handleBackToHome} />}
+      {showEditProviders && <EditProviders onBack={handleBackToHome} />}
+      {showProvidersView && <ProvidersView onBack={handleBackToHome} />}
+      {showCategoriesView && <CategoriesView onBack={handleBackToHome} />}
+      {showHistory && <PurchaseHistory historial={historial} onBack={handleBackToHome} />}
+      {showCart && (
         <CartView
           cart={cart}
           onAdd={handleAddToCart}
           onRemove={handleRemoveFromCart}
           onPay={handlePay}
-          onBack={handleBackToShop}
+          onBack={handleBackToHome}
         />
-      ) : (
+      )}
+      {!showCart && !showHistory && !showAddProduct && !showAddCategory && !showAddProvider && !showEditProducts && !showEditCategories && !showEditProviders && !showProvidersView && !showCategoriesView && (
         <>
+          {isAdmin && (
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', margin: '2rem 2rem 1.5rem 0' }}>
+              <button
+                style={{
+                  background: '#FFD600',
+                  color: '#222',
+                  border: 'none',
+                  borderRadius: 6,
+                  padding: '0.7rem 1.5rem',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  fontSize: '1rem'
+                }}
+                onClick={() => setShowAddProduct(true)}
+              >
+                + Agregar producto
+              </button>
+              <button
+                style={{
+                  background: '#0071ce',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 6,
+                  padding: '0.7rem 1.5rem',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  fontSize: '1rem'
+                }}
+                onClick={() => setShowEditProducts(true)}
+              >
+                Editar productos
+              </button>
+            </div>
+          )}
           <SearchBar value={busqueda} onChange={setBusqueda} onSearch={handleSearch} />
           <ProductList productos={productosFiltrados} onAddToCart={handleAddToCart} />
         </>

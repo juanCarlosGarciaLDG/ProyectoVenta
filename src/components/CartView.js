@@ -94,16 +94,28 @@ function CartView({ cart, onAdd, onRemove, onPay, onBack }) {
       }}>
         <h3 style={{ marginBottom: 16 }}>Total a pagar</h3>
         <div style={{ fontWeight: 'bold', fontSize: '2rem', marginBottom: 32 }}>${total.toFixed(2)}</div>
-        <button className="btn" style={{
-          width: '100%',
-          padding: '1rem',
-          fontSize: '1.1rem',
-          background: '#3a6ea5',
-          color: '#fff',
-          border: 'none',
-          borderRadius: 6,
-          cursor: 'pointer'
-        }} onClick={onPay}>Pagar</button>
+        <button
+          className="btn"
+          style={{
+            width: '100%',
+            padding: '1rem',
+            fontSize: '1.1rem',
+            background: '#FFD600', // amarillo
+            color: '#222',
+            border: 'none',
+            borderRadius: 6,
+            cursor: 'pointer'
+          }}
+          onClick={() => {
+            if (cart.length === 0) {
+              alert('No hay productos en el carrito');
+              return;
+            }
+            onPay();
+          }}
+        >
+          Pagar
+        </button>
       </div>
     </div>
   );
